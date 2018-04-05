@@ -31,19 +31,17 @@ public class CustomerServiceImplTest {
 
 	private CustomerMapper customerMapper = CustomerMapper.INSTANCE;
 
-	private CustomerServiceImpl customerService;
+	private CustomerService customerService;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		customerService = new CustomerServiceImpl();
-		customerService.setCustomerMapper(customerMapper);
-		customerService.setCustomerRepository(customerRepository);
-		// customerService = new CustomerServiceImpl(customerMapper, customerRepository);
+
+		customerService = new CustomerServiceImpl(customerMapper, customerRepository);
 	}
 
 	@Test
-	public void getAllCustomers() throws Exception {
+	public void getAllCustomers() {
 		//given
 		Customer customer1 = new Customer();
 		customer1.setId(1l);
@@ -66,7 +64,7 @@ public class CustomerServiceImplTest {
 	}
 
 	@Test
-	public void getCustomerById() throws Exception {
+	public void getCustomerById() {
 		//given
 		Customer customer1 = new Customer();
 		customer1.setId(1l);
@@ -82,7 +80,7 @@ public class CustomerServiceImplTest {
 	}
 
 	@Test
-	public void createNewCustomer() throws Exception {
+	public void createNewCustomer() {
 
 		//given
 		CustomerDTO customerDTO = new CustomerDTO();
@@ -104,7 +102,7 @@ public class CustomerServiceImplTest {
 	}
 
 	@Test
-	public void saveCustomerByDTO() throws Exception {
+	public void saveCustomerByDTO() {
 
 		//given
 		CustomerDTO customerDTO = new CustomerDTO();
