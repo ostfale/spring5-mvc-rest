@@ -30,7 +30,7 @@ public class CustomerController {
 		return new ResponseEntity<>(new CustomerListDTO(customerService.getAllCustomers()), HttpStatus.OK);
 	}
 
-	@GetMapping({"{id}"})
+	@GetMapping({"/{id}"})
 	public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
 		return new ResponseEntity<>(customerService.getCustomerById(id), HttpStatus.OK);
 	}
@@ -38,5 +38,10 @@ public class CustomerController {
 	@PostMapping
 	public ResponseEntity<CustomerDTO> createNewCustomer(@RequestBody CustomerDTO customerDTO){
 		return new ResponseEntity<>(customerService.createNewCustomer(customerDTO),HttpStatus.CREATED);
+	}
+
+	@PutMapping({"/{id}"})
+	public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO){
+		return new ResponseEntity<>(customerService.saveCustomerByDTO(id, customerDTO),HttpStatus.OK);
 	}
 }
