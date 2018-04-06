@@ -1,7 +1,9 @@
 package guru.springframework.controllers.v1;
 
 import guru.springframework.api.v1.model.CategoryDTO;
+import guru.springframework.controllers.RestResponseEntityExceptionHandler;
 import guru.springframework.services.CategoryService;
+import guru.springframework.services.ResourceNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -30,55 +32,67 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class CategoryControllerTest {
 
-    private static final String NAME = "Jim";
+	private static final String NAME = "Jim";
 
-    @Mock
-    private CategoryService categoryService;
+	@Mock
+	private CategoryService categoryService;
 
-    @InjectMocks
-    private CategoryController categoryController;
+	@InjectMocks
+	private CategoryController categoryController;
 
-    private MockMvc mockMvc;
+	private MockMvc mockMvc;
 
-    @Before
-    public void setUp()  {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(categoryController).build();
+		mockMvc = MockMvcBuilders.standaloneSetup(categoryController)
+				.setControllerAdvice(new RestResponseEntityExceptionHandler())
+				.build();
 
-    }
+	}
 
-    @Test
-    public void testListCategories() throws Exception {
-        CategoryDTO category1 = new CategoryDTO();
-        category1.setId(1L);
-        category1.setName(NAME);
+	@Test
+	public void testListCategories() throws Exception {
+		CategoryDTO category1 = new CategoryDTO();
+		category1.setId(1L);
+		category1.setName(NAME);
 
-        CategoryDTO category2 = new CategoryDTO();
-        category2.setId(2L);
-        category2.setName("Bob");
+		CategoryDTO category2 = new CategoryDTO();
+		category2.setId(2L);
+		category2.setName("Bob");
 
-        List<CategoryDTO> categories = Arrays.asList(category1, category2);
+		List<CategoryDTO> categories = Arrays.asList(category1, category2);
 
-        when(categoryService.getAllCategories()).thenReturn(categories);
+		when(categoryService.getAllCategories()).thenReturn(categories);
 
-        mockMvc.perform(get(CategoryController.BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.categories", hasSize(2)));
-    }
+		mockMvc.perform(get(CategoryController.BASE_URL)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.categories", hasSize(2)));
+	}
 
-    @Test
-    public void testGetByNameCategories() throws Exception {
-        CategoryDTO category1 = new CategoryDTO();
-        category1.setId(1L);
-        category1.setName(NAME);
+	@Test
+	public void testGetByNameCategories() throws Exception {
+		CategoryDTO category1 = new CategoryDTO();
+		category1.setId(1L);
+		category1.setName(NAME);
 
-        when(categoryService.getCategoryByName(anyString())).thenReturn(category1);
+		when(categoryService.getCategoryByName(anyString())).thenReturn(category1);
 
-        mockMvc.perform(get(CategoryController.BASE_URL + "/Jim")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", equalTo(NAME)));
-    }
+		mockMvc.perform(get(CategoryController.BASE_URL + "/Jim")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.name", equalTo(NAME)));
+	}
+
+	@Test
+	public void testGetByNameNotFound() throws Exception {
+
+		when(categoryService.getCategoryByName(anyString())).thenThrow(ResourceNotFoundException.class);
+
+		mockMvc.perform(get(CategoryController.BASE_URL + "/Foo")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound());
+	}
 }
