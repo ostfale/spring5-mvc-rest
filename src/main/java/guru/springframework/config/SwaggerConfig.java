@@ -10,12 +10,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * Swagger Configuration class
+ * Calling Swagger-UI : localhost:8080/swagger-ui.html
  * Created : 09.04.2018
  *
  * @author : usauerbrei
  */
 @EnableSwagger2
 @Configuration
+//public class SwaggerConfig extends WebMvcConfigurationSupport {
 public class SwaggerConfig {
 
 	@Bean
@@ -27,4 +29,13 @@ public class SwaggerConfig {
 				.build()
 				.pathMapping("/");
 	}
+
+	// use this if not in  spring boot project
+	/*@Override
+	protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("swagger-ui.html")
+				.addResourceLocations("classpath:/META-INF/resources");
+		registry.addResourceHandler("/webjars/**")
+				.addResourceLocations("classpath:/META-INF/resources/webjars");
+	}*/
 }
